@@ -23,4 +23,13 @@ public class HelloWorldController {
         return "helloWorld" + "  " + userById.name;
 
     }
+    //自动匹配参数
+    @RequestMapping(value = {"/login"}
+            , produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String login(String id) {
+        User userById = userService.getUserById(id);
+        return "helloWorld" + " 你是 " + userById.name;
+
+    }
 }
