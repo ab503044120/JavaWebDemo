@@ -30,7 +30,10 @@
     <listener>
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
     </listener>
-
+    <!-- Spring 容器启动监听器 -->
+    <listener>
+        <listener-class>org.huihui.ftp.FtpServerListener</listener-class>
+    </listener>
 
     <!-- spring mvc servlet-->
     <servlet>
