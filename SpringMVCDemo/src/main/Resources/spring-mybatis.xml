@@ -10,7 +10,7 @@
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd">
     <!-- 自动扫描 -->
-    <context:component-scan base-package="org.huihui"/>
+    <context:component-scan base-package="org.huihui.service"/>
 
     <!-- 第一种方式：加载一个properties文件 -->
     <bean id="propertyConfigurer"
