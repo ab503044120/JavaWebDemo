@@ -4,7 +4,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <context:component-scan base-package="org.huihui" />
+    <context:component-scan base-package="org.huihui"/>
 
     <!-- 静态资源(js、image等)的访问 -->
     <mvc:default-servlet-handler/>
@@ -20,4 +20,19 @@
         <property name="prefix" value="/WEB-INF/jsp"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+    <bean
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+        id="multipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxUploadSize" value="1024000"/>
+    </bean>
+
+    <!--　　 &lt;!&ndash; SpringMVC上传文件时，需要配置MultipartResolver处理器 &ndash;&gt;-->
+    <!--&lt;!&ndash; 指定所上传文件的总大小,单位字节。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 &ndash;&gt;-->
+
+    <!--<bean id="multipartResolver"-->
+    <!--class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+    <!--<property name="defaultEncoding" value="UTF-8"/>-->
+    <!--<property name="maxUploadSize" value="10240000"/>-->
+    <!--</bean>-->
 </beans>
