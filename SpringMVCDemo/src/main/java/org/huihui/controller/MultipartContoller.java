@@ -20,17 +20,24 @@ import javax.servlet.http.HttpSession;
  */
 @Controller
 public class MultipartContoller {
-    @RequestMapping(name = "/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadPic(MultipartFile pic, HttpServletRequest request, @RequestParam(name = "file") String file) {
+    public String uploadPic(MultipartFile pic, HttpServletRequest request, @RequestParam(name = "file1") String file) {
         String realPath = request.getSession().getServletContext().getRealPath("/");
-        File picdir = new File(realPath, file);
+        File picdir = new File(realPath, pic.getOriginalFilename());
         try {
             pic.transferTo(picdir);
         } catch (Exception e) {
             return "failed";
         }
         return "ok";
+    }
+
+    @RequestMapping(value = "/multipart", method = RequestMethod.POST)
+    @ResponseBody
+    public String multipart(@RequestParam(name = "file1") String file) {
+
+        return file;
     }
 
     /**

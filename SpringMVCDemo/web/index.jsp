@@ -11,6 +11,7 @@
     <title>$Title$</title>
   </head>
   <body>
+    <img src="/pic">
   $END$
   </body>
 </html>

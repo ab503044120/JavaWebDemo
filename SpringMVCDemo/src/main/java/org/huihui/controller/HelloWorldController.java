@@ -11,10 +11,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -77,7 +83,7 @@ public class HelloWorldController {
         FTPClient ftpClient = new FTPClient();
         try {
             int reply;
-            ftpClient.connect("127.0.0.1",2121);
+            ftpClient.connect("127.0.0.1", 2121);
             ftpClient.login("1", "1");
             reply = ftpClient.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
@@ -86,10 +92,10 @@ public class HelloWorldController {
             }
             ftpClient.changeWorkingDirectory("/GOS_CAS/BACKUP/cas_config_backup");//转移到FTP服务器目录
             FTPFile[] fs = ftpClient.listFiles();
-            for(int i=0;i<fs.length;i++){
-                if(fs[i].getName().equals("app-release_signed_7zip_aligned.apk")){
+            for (int i = 0; i < fs.length; i++) {
+                if (fs[i].getName().equals("app-release_signed_7zip_aligned.apk")) {
                     String saveAsFileName = new String(fs[i].getName().getBytes("UTF-8"), "ISO8859-1");
-                    response.setHeader("Content-Disposition", "attachment;fileName="+saveAsFileName);
+                    response.setHeader("Content-Disposition", "attachment;fileName=" + saveAsFileName);
                     OutputStream os = response.getOutputStream();
                     ftpClient.retrieveFile(fs[i].getName(), os);
                     os.flush();
@@ -108,5 +114,79 @@ public class HelloWorldController {
                 }
             }
         }
+    }
+
+    //自动匹配参数 post
+    @RequestMapping(value = {"/pic"}
+            , produces = "text/html;charset=UTF-8"
+            , method = RequestMethod.GET)
+    @ResponseBody
+    public void pic(HttpServletResponse response) {
+        response.setContentType("image/png");
+        FTPClient ftpClient = new FTPClient();
+        try {
+            int reply;
+            ftpClient.connect("127.0.0.1", 2121);
+            ftpClient.login("1", "1");
+            reply = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                ftpClient.disconnect();
+                return;
+            }
+            ftpClient.changeWorkingDirectory("/GOS_CAS/BACKUP/cas_config_backup");//转移到FTP服务器目录
+            FTPFile[] fs = ftpClient.listFiles();
+            for (int i = 0; i < fs.length; i++) {
+                if (fs[i].getName().equals("f51d339.jpg")) {
+                    OutputStream os = response.getOutputStream();
+                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                    ftpClient.retrieveFile(fs[i].getName(), outStream);
+                    os.flush();
+                    os.close();
+                    byte[] b = outStream.toByteArray();
+                    os.write(b);
+                    break;
+                }
+            }
+            ftpClient.logout();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException ioe) {
+                }
+            }
+        }
+    }
+
+    //自动匹配参数 post
+    @RequestMapping(value = {"/pic1"}
+            , produces = "text/html;charset=UTF-8"
+            , method = RequestMethod.GET)
+    @ResponseBody
+    public void pic1(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType("image/png");
+        String realPath = "C:/Users/Public/Pictures/Sample Pictures";//request.getSession().getServletContext().getRealPath("/");
+        File file = new File(realPath, "f51d339.jpg");
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] bytes = readInputStream(fileInputStream);
+            ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static byte[] readInputStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[2048];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        inStream.close();
+        return outStream.toByteArray();
     }
 }
